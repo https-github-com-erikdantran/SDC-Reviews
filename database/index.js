@@ -10,6 +10,19 @@ connection.connect();
 
 module.exports = connection;
 
+
+
+
+
+
+
+
+
+
+
+
+
+//mysql commands for dataload
 //reviews
 /*
 load data local infile '/Users/dkim6613/sdc-capstone/reviews.csv'
