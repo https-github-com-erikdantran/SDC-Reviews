@@ -1,0 +1,23 @@
+{
+  "name": "sdc-capstone",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "dependencies": {
+    "mysql2": "^2.3.3"
+  },
+  "devDependencies": {},
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/https-github-com-erikdantran/SDC-Reviews.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/https-github-com-erikdantran/SDC-Reviews/issues"
+  },
+  "homepage": "https://github.com/https-github-com-erikdantran/SDC-Reviews#readme"
+}
