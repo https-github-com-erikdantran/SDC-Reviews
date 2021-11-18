@@ -3,6 +3,13 @@ drop database if exists reviews;
 create database reviews;
 use reviews;
 
+create table reviewsSample (
+  id int not null primary key auto_increment,
+  recommend boolean not null,
+  reported boolean not null,
+  reviewer_name varchar(255) not null
+);
+
 create table reviews (
   id int not null primary key auto_increment,
   product_id int not null,

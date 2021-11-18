@@ -15,7 +15,18 @@ module.exports = connection;
 
 
 
-
+/*
+load data local infile '/Users/dkim6613/sdc-capstone/sample boolean csv.csv'
+into table reviewsSample
+fields terminated by ','
+lines terminated by '\n'
+ignore 1 rows
+(id, recommend, reported, reviewer_name)
+set
+  recommend = case recommend
+    when true then 1 else 0
+  end
+*/
 
 
 

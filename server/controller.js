@@ -60,7 +60,7 @@ const controller = {
       if (err) {
         res.status(404).send(err);
       } else {
-        console.log('results: ', results)
+        console.log('results: ', results[3])
         let data = {
           product_id: product_id,
           ratings: {},
@@ -68,6 +68,7 @@ const controller = {
           characteristics: {}
         };
         tempRatings = {};
+        tempRecommended = {};
         for (let i = 0; i < results.length; i++) {
           if (tempRatings[results[i].rating] === undefined) {
             tempRatings[results[i].rating] = 1;
@@ -76,6 +77,14 @@ const controller = {
           }
         }
         data.ratings = tempRatings;
+        for (let i = 0; i < results.length; i++) {
+          if (tempRecommended[results[i].recommend] === undefined) {
+            tempRecommended[results[i].recommend] = 1;
+          } else {
+            tempRecommended[results[i].recommend]++;
+          }
+        }
+        data.recommended = tempRecommended;
         res.status(200).send(data)
       }
     })
