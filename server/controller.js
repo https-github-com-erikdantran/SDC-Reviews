@@ -60,44 +60,83 @@ const controller = {
       if (err) {
         res.status(404).send(err);
       } else {
-        console.log('results: ', results[3])
+        // console.log('results: ', results[3])
         let data = {
           product_id: product_id,
           ratings: {},
           recommended: {},
           characteristics: {}
         };
-        tempRatings = {};
-        tempRecommended = {};
-        for (let i = 0; i < results.length; i++) {
-          if (tempRatings[results[i].rating] === undefined) {
-            tempRatings[results[i].rating] = 1;
+        //do 2 addtl different queries: 1 for characterisics, charac reviews
+        //get the range of data using [0] to [length-1]
+        //get the values and average it
+        //in the end should be 1 char 'quality' id 5 and value 4.2
+        const characteristicsQueryStr = `select * from characteristics where product_id = ${product_id}`
+        db.query(characteristicsQueryStr, (characteristicsErr, characteristicsResults) => {
+          if (characteristicsErr) {
+            res.status(404).send(characteristicsErr);
           } else {
-            tempRatings[results[i].rating]++
+            const charReviewQueryStr = `select * from characteristics_reviews where characteristic_id >= ${characteristicsResults[0].id} and characteristic_id <= ${characteristicsResults[characteristicsResults.length - 1].id}`;
+            db.query(charReviewQueryStr, (charReviewErr, charReviewResults) => {
+              if (charReviewErr) {
+                res.status(404).send(charReviewErr);
+              } else {
+                console.log(charReviewResults)
+                console.log(characteristicsResults)
+
+                tempcharacteristics = {};
+                for (let i = 0; i < characteristicsResults.length; i++) {
+                  var sumOfValues = 0;
+                  var iteration = 0;
+                  for (let j = 0; j < charReviewResults.length; j++) {
+                    if (characteristicsResults[i].id === charReviewResults[j].characteristic_id) {
+                      sumOfValues += charReviewResults[j].value;
+                      iteration++;
+                    }
+                  }
+                  var avgOfValues = (sumOfValues / iteration).toFixed(4);
+                  tempcharacteristics[characteristicsResults[i].name] = {
+                    id: characteristicsResults[i].id,
+                    value: charReviewResults[i] ? avgOfValues : 0
+                  }
+                }
+                data.characteristics = tempcharacteristics;
+                tempRatings = {};
+                for (let i = 0; i < results.length; i++) {
+                  if (tempRatings[results[i].rating] === undefined) {
+                    tempRatings[results[i].rating] = 1;
+                  } else {
+                    tempRatings[results[i].rating]++
+                  }
+                }
+                data.ratings = tempRatings;
+                tempRecommended = {};
+                for (let i = 0; i < results.length; i++) {
+                  if (tempRecommended[results[i].recommend] === undefined) {
+                    tempRecommended[results[i].recommend] = 1;
+                  } else {
+                    tempRecommended[results[i].recommend]++;
+                  }
+                }
+                data.recommended = tempRecommended;
+              }
+              res.status(200).send(data)
+            })
           }
-        }
-        data.ratings = tempRatings;
-        for (let i = 0; i < results.length; i++) {
-          if (tempRecommended[results[i].recommend] === undefined) {
-            tempRecommended[results[i].recommend] = 1;
-          } else {
-            tempRecommended[results[i].recommend]++;
-          }
-        }
-        data.recommended = tempRecommended;
-        res.status(200).send(data)
+        })
       }
     })
-
-
-
-
   },
 
 
-  // addReview: (req, res) => {
+  addReview: (req, res) => {
+    let {product_id, rating, summary, body, recommend, name, email, photos, characteristics} = req.body;
 
-  // }
+    const queryStr = `begin;
+    insert into reviews (product_id, rating, )
+
+    `;
+  },
 
 
   ReviewHelpful: (req, res) => {

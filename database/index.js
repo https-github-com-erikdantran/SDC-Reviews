@@ -21,12 +21,12 @@ into table reviewsSample
 fields terminated by ','
 lines terminated by '\n'
 ignore 1 rows
-(id, recommend, reported, reviewer_name)
-set
-  recommend = case recommend
-    when true then 1 else 0
-  end
+(id, @recommend, @reported, reviewer_name)
+SET
+  recommend = IF(@recommend='true',1,0),
+  reported = IF(@reported='true',1,0);
 */
+
 
 
 
@@ -41,8 +41,11 @@ into table reviews
 fields terminated by ','
 lines terminated by '\n'
 ignore 1 rows
-(id, product_id, rating, @date, summary, body, recommend, reported, reviewer_name, reviewer_email, response, helpfulness)
-SET date = FROM_UNIXTIME(@date/1000, '%Y-%m-%d %H:%i:%s %p');
+(id, product_id, rating, @date, summary, body, @recommend, @reported, reviewer_name, reviewer_email, response, helpfulness)
+SET
+  date = FROM_UNIXTIME(@date/1000, '%Y-%m-%d %H:%i:%s %p'),
+  recommend = IF(@recommend='true',1,0),
+  reported = IF(@reported='true',1,0);
 */
 
 //reviews_photos
