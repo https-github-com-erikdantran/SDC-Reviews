@@ -124,43 +124,31 @@ const controller = {
   addReview: (req, res) => {
     let {product_id, rating, summary, body, recommend, name, email, photos, characteristics} = req.body;
 
-  //   const queryStr = `
-  //   insert into reviews (product_id, rating, date, summary, body, recommend, reported, reviewer_name, reviewer_email, response, helpfulness)
-  //     values (${product_id}, ${rating}, now(), "${summary}", "${body}", ${recommend}, false, "${name}", "${email}", null, 0)
-  //   insert into reviews_photos (review_id, url)
-  //     select reviews.id, "${photos}" from reviews where "${photos}" !== null
-  //   insert into characteristic_reviews (characteristic_id, review_id, value)
-  //     select ${charKeys}, reviews.id, ${charValues} from reviews
-  //   `;
     const reviewQueryStr = `
     insert into reviews (product_id, rating, date, summary, body, recommend, reported, reviewer_name, reviewer_email, response, helpfulness)
       values (${product_id}, ${rating}, now(), "${summary}", "${body}", ${recommend}, false, "${name}", "${email}", null, 0)`;
 
     connection.query(reviewQueryStr, (reviewErr, reviewResults) => {
       if (reviewErr) {
-        console.log("query1 Error")
         res.status(404).send(reviewErr);
       } else {
-        console.log("reviewResults", reviewResults)
         const reviewId = reviewResults.insertId;
         if (req.body.photos) {
           const reviewPhotoStr = `INSERT INTO reviews_photos (review_id, url)
           VALUES (${reviewId}, "${photos}")`;
+
           connection.query(reviewPhotoStr, (reviewPhotoErr, reviewPhotoResults) => {
             if (reviewPhotoErr) {
-              console.log("query2 Error")
-              console.log("reviewPhotoErr", reviewPhotoErr)
               res.status(404).send(reviewPhotoErr)
             }
           })
         }
-
         for (const [key, value] of Object.entries(characteristics)) {
           const characteristicReviewStr = `insert into characteristics_reviews (characteristic_id, review_id, value)
           VALUES (${key}, ${reviewId}, ${value})`;
+
           connection.query(characteristicReviewStr, (characteristicErr, characteristicResults) => {
             if (characteristicErr) {
-              console.log("query3 Error")
               res.status(404).send(characteristicErr)
             }
           })
