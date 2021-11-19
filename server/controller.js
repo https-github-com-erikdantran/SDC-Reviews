@@ -1,4 +1,4 @@
-const db = require('../database/index.js');
+const connection = require('../database/index.js');
 
 const controller = {
 
@@ -6,7 +6,7 @@ const controller = {
     let {product_id, count} = req.query;
     const queryStr = `select * from reviews where product_id = ${product_id} limit ${count}`;
 
-    db.query(queryStr, (err, results) => {
+    connection.query(queryStr, (err, results) => {
       if (err) {
         res.status(404).send(err);
       } else {
@@ -16,7 +16,7 @@ const controller = {
           results: [],
         };
         const photoQueryStr = `select * from reviews_photos where review_id >= ${results[0].id} and review_id <= ${results[results.length - 1].id}`;
-        db.query(photoQueryStr, (photoErr, photoResults) => {
+        connection.query(photoQueryStr, (photoErr, photoResults) => {
           if (photoErr) {
             res.status(404).send(photoErr);
           } else {
@@ -56,34 +56,26 @@ const controller = {
     let {product_id} = req.query;
     const queryStr = `select * from reviews where product_id = ${product_id}`;
 
-    db.query(queryStr, (err, results) => {
+    connection.query(queryStr, (err, results) => {
       if (err) {
         res.status(404).send(err);
       } else {
-        // console.log('results: ', results[3])
         let data = {
           product_id: product_id,
           ratings: {},
           recommended: {},
           characteristics: {}
         };
-        //do 2 addtl different queries: 1 for characterisics, charac reviews
-        //get the range of data using [0] to [length-1]
-        //get the values and average it
-        //in the end should be 1 char 'quality' id 5 and value 4.2
         const characteristicsQueryStr = `select * from characteristics where product_id = ${product_id}`
-        db.query(characteristicsQueryStr, (characteristicsErr, characteristicsResults) => {
+        connection.query(characteristicsQueryStr, (characteristicsErr, characteristicsResults) => {
           if (characteristicsErr) {
             res.status(404).send(characteristicsErr);
           } else {
             const charReviewQueryStr = `select * from characteristics_reviews where characteristic_id >= ${characteristicsResults[0].id} and characteristic_id <= ${characteristicsResults[characteristicsResults.length - 1].id}`;
-            db.query(charReviewQueryStr, (charReviewErr, charReviewResults) => {
+            connection.query(charReviewQueryStr, (charReviewErr, charReviewResults) => {
               if (charReviewErr) {
                 res.status(404).send(charReviewErr);
               } else {
-                console.log(charReviewResults)
-                console.log(characteristicsResults)
-
                 tempcharacteristics = {};
                 for (let i = 0; i < characteristicsResults.length; i++) {
                   var sumOfValues = 0;
@@ -132,10 +124,50 @@ const controller = {
   addReview: (req, res) => {
     let {product_id, rating, summary, body, recommend, name, email, photos, characteristics} = req.body;
 
-    const queryStr = `begin;
-    insert into reviews (product_id, rating, )
+  //   const queryStr = `
+  //   insert into reviews (product_id, rating, date, summary, body, recommend, reported, reviewer_name, reviewer_email, response, helpfulness)
+  //     values (${product_id}, ${rating}, now(), "${summary}", "${body}", ${recommend}, false, "${name}", "${email}", null, 0)
+  //   insert into reviews_photos (review_id, url)
+  //     select reviews.id, "${photos}" from reviews where "${photos}" !== null
+  //   insert into characteristic_reviews (characteristic_id, review_id, value)
+  //     select ${charKeys}, reviews.id, ${charValues} from reviews
+  //   `;
+    const reviewQueryStr = `
+    insert into reviews (product_id, rating, date, summary, body, recommend, reported, reviewer_name, reviewer_email, response, helpfulness)
+      values (${product_id}, ${rating}, now(), "${summary}", "${body}", ${recommend}, false, "${name}", "${email}", null, 0)`;
 
-    `;
+    connection.query(reviewQueryStr, (reviewErr, reviewResults) => {
+      if (reviewErr) {
+        console.log("query1 Error")
+        res.status(404).send(reviewErr);
+      } else {
+        console.log("reviewResults", reviewResults)
+        const reviewId = reviewResults.insertId;
+        if (req.body.photos) {
+          const reviewPhotoStr = `INSERT INTO reviews_photos (review_id, url)
+          VALUES (${reviewId}, "${photos}")`;
+          connection.query(reviewPhotoStr, (reviewPhotoErr, reviewPhotoResults) => {
+            if (reviewPhotoErr) {
+              console.log("query2 Error")
+              console.log("reviewPhotoErr", reviewPhotoErr)
+              res.status(404).send(reviewPhotoErr)
+            }
+          })
+        }
+
+        for (const [key, value] of Object.entries(characteristics)) {
+          const characteristicReviewStr = `insert into characteristics_reviews (characteristic_id, review_id, value)
+          VALUES (${key}, ${reviewId}, ${value})`;
+          connection.query(characteristicReviewStr, (characteristicErr, characteristicResults) => {
+            if (characteristicErr) {
+              console.log("query3 Error")
+              res.status(404).send(characteristicErr)
+            }
+          })
+        }
+      }
+      res.status(200).send('successfully added data')
+    })
   },
 
 
@@ -143,7 +175,7 @@ const controller = {
     let {review_id} = req.params;
     const queryStr = `update reviews set helpfulness = helpfulness + 1 where id = ${review_id}`;
 
-    db.query(queryStr, (err, results) => {
+    connection.query(queryStr, (err, results) => {
       if (err) {
         res.status(404).send(err);
       } else {
@@ -157,7 +189,7 @@ const controller = {
     let {review_id} = req.params;
     const queryStr = `update reviews set reported = true where id = ${review_id}`;
 
-    db.query(queryStr, (err, results) => {
+    connection.query(queryStr, (err, results) => {
       if (err) {
         res.status(404).send(err);
       } else {
