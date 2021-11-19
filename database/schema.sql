@@ -22,7 +22,8 @@ create table reviews (
 create table reviews_photos (
   id int not null primary key auto_increment,
   review_id int not null,
-  url varchar(255) not null
+  url varchar(255) not null,
+  foreign key (review_id) references reviews(id)
 );
 
 create table characteristics (
@@ -35,7 +36,9 @@ create table characteristics_reviews (
   id int not null primary key auto_increment,
   characteristic_id int not null,
   review_id int not null,
-  value int not null
+  value int not null,
+  foreign key (characteristic_id) references characteristics(id),
+  foreign key (review_id) references reviews(id)
 );
 
 

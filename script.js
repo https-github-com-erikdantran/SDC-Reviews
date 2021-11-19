@@ -23,5 +23,5 @@ export default function () {
     'transaction time < 30000ms': r => r.timings.duration < 30000
   });
 
-  sleep(0.1);
+  sleep(0.5);
 };
