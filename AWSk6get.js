@@ -6,9 +6,9 @@ export const options = {
   duration: '30s'
 };
 
-const product_id = Math.floor(Math.random() * 1000011) + 1;
-const getReviews = `http://localhost:5000/reviews/?product_id=${product_id}&count=5`;
-const getReviewData = `http://localhost:5000/reviews/meta/?product_id=${product_id}`;
+
+const getReviews = `http://3.18.212.140:5000/reviews/?product_id=2&count=2`;
+const getReviewData = `http://3.18.212.140:5000/reviews/meta/?product_id=2`;
 
 
 export default function () {

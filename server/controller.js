@@ -4,6 +4,7 @@ const controller = {
 
   getReviews: (req, res) => {
     let {product_id, count} = req.query;
+
     const queryStr = `select * from reviews where product_id = ${product_id} limit ${count}`;
 
     connection.query(queryStr, (err, results) => {
@@ -15,6 +16,9 @@ const controller = {
           count: count,
           results: [],
         };
+        if (results.length === 0) {
+          return res.send(data);
+        }
         const photoQueryStr = `select * from reviews_photos where review_id >= ${results[0].id} and review_id <= ${results[results.length - 1].id}`;
         connection.query(photoQueryStr, (photoErr, photoResults) => {
           if (photoErr) {

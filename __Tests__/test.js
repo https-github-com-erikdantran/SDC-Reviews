@@ -31,7 +31,7 @@ test('Should get review meta data for product_id 5', async () => {
     expect(res.body.ratings[4]).toBe(1)
     expect(res.body.recommended[1]).toBe(2)
     expect(res.body.characteristics.Size.id).toBe(14)
-    expect(res.body.characteristics.Size.value).toBe("4.5000")
+    expect(res.body.characteristics.Size.value).toBe("4.6250")
     expect(res.body.characteristics.Width.id).toBe(15)
     expect(res.body.characteristics.Width.value).toBe("4.2500")
     expect(res.body.characteristics.Comfort.id).toBe(16)
@@ -43,7 +43,7 @@ test('Should get review meta data for product_id 5', async () => {
 
 test('Should post/add data to reviews', async () => {
   let newReview = {
-    "product_id": 1,
+    "product_id": 10,
     "rating": 2,
     "summary": "test summary",
     "body": "test body",
