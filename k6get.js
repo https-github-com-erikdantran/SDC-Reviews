@@ -6,11 +6,13 @@ export const options = {
   duration: '30s'
 };
 
+
 const getReviews = `http://localhost:5000/reviews/?product_id=2&count=5`;
 const getReviewData = `http://localhost:5000/reviews/meta/?product_id=2`;
 
+
 export default function () {
-  const res = http.get(getReviews);
+  const res = http.get(getReviewData);
   check(res, {
     'is status 200': r => r.status === 200,
     'transaction time < 10ms': r => r.timings.duration < 10,
