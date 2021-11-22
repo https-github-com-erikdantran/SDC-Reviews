@@ -6,8 +6,9 @@ export const options = {
   duration: '30s'
 };
 
-const putReviewHelpful = `http://localhost:5000/reviews/1/helpful`;
-const putReviewReported = `http://localhost:5000/reviews/1/report`;
+const reviewId = Math.floor(Math.random() * 5774952) + 1;
+const putReviewHelpful = `http://localhost:5000/reviews/${reviewId}/helpful`;
+const putReviewReported = `http://localhost:5000/reviews/${reviewId}/report`;
 
 export default function () {
   const res = http.put(putReviewReported);
