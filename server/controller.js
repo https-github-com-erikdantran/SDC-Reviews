@@ -19,7 +19,13 @@ const controller = {
         if (results.length === 0) {
           return res.send(data);
         }
-        const photoQueryStr = `select * from reviews_photos where review_id >= ${results[0].id} and review_id <= ${results[results.length - 1].id}`;
+        let ids = results.map(id => {
+          return id.id
+        })
+        console.log('ids', ids)
+        let joinIds = ids.join(',');
+        // const photoQueryStr = `select * from reviews_photos where review_id >= ${results[0].id} and review_id <= ${results[results.length - 1].id}`;
+        const photoQueryStr = `select * from reviews_photos where reviews_photos.review_id in (${joinIds})`;
         connection.query(photoQueryStr, (photoErr, photoResults) => {
           if (photoErr) {
             res.status(404).send(photoErr);

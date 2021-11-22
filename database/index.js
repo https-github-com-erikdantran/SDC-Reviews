@@ -61,3 +61,20 @@ lines terminated by '\n'
 ignore 1 rows
 (id, characteristic_id, review_id, value)
 */
+
+/**
+ {
+    "product_id": 3,
+    "rating": 2,
+    "summary": "test summary",
+    "body": "test body",
+    "recommend": true,
+    "name": "test name3",
+    "email": "test email3",
+    "photos": "google.com/image",
+    "characteristics": {
+        "14": 5,
+        "15": 5
+    }
+}
+ */
